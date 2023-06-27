@@ -27,7 +27,7 @@ docker run -d \
   --env MONGODB_USER=admin \
   --env MONGODB_PASS=password \
   --env RETAIN_COUNT=5 \
-  ternandsparrow/mongodb-backup-s3:1.2.2 # check DockerHub for latest tag
+  ileo/mongodb-backup-s3:1.0.2 # check DockerHub for latest tag
 ```
 
 If your bucket is not in a standard region and you get `A client error (PermanentRedirect) occurred
@@ -43,7 +43,7 @@ docker run -d \
   --env BUCKET_REGION=ap-southeast-2 \
   --env BACKUP_FOLDER=a/sub/folder/path/ \
   --env INIT_BACKUP=true \
-  ternandsparrow/mongodb-backup-s3:1.2.2
+  ileo/mongodb-backup-s3:1.0.2
 ```
 
 Add to a `docker-compose.yml` to enhance your robotic army:
@@ -51,7 +51,7 @@ Add to a `docker-compose.yml` to enhance your robotic army:
 For automated backups
 ```
 mongodbbackup:
-  image: 'ternandsparrow/mongodb-backup-s3:1.2.2'
+  image: 'ileo/mongodb-backup-s3:1.0.2'
   links:
     - mongodb
   environment:
@@ -67,7 +67,7 @@ mongodbbackup:
 Or use `INIT_RESTORE` with `DISABLE_CRON` for seeding/restoring/starting a db (great for a fresh instance or a dev machine)
 ```
 mongodbbackup:
-  image: 'ternandsparrow/mongodb-backup-s3:1.2.2'
+  image: 'ileo/mongodb-backup-s3:1.0.2'
   links:
     - mongodb
   environment:

@@ -25,9 +25,9 @@ cat << EOJSON > $tempFile
   "executionRoleArn": "$Z_EXECUTION_ROLE_ARN",
   "containerDefinitions": [
     {
-      "name": "ternandsparrow_mongodb-backup-s3",
+      "name": "ileo_mongodb-backup-s3",
       "cpu": 0,
-      "image": "ternandsparrow/mongodb-backup-s3:$imageVersion",
+      "image": "ileo/mongodb-backup-s3:$imageVersion",
       "logConfiguration": {
         "logDriver": "awslogs",
         "options": {
