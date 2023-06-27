@@ -1,9 +1,5 @@
 #!/bin/bash
 
-MONGODB_HOST=${MONGODB_PORT_27017_TCP_ADDR:-${MONGODB_HOST}}
-MONGODB_HOST=${MONGODB_PORT_1_27017_TCP_ADDR:-${MONGODB_HOST}}
-MONGODB_PORT=${MONGODB_PORT_27017_TCP_PORT:-${MONGODB_PORT}}
-MONGODB_PORT=${MONGODB_PORT_1_27017_TCP_PORT:-${MONGODB_PORT}}
 MONGODB_USER=${MONGODB_USER:-${MONGODB_ENV_MONGODB_USER}}
 MONGODB_PASS=${MONGODB_PASS:-${MONGODB_ENV_MONGODB_PASS}}
 
@@ -17,6 +13,8 @@ S3PATH="s3://$BUCKET/$BACKUP_FOLDER"
 [[ ( -n "${MONGODB_USER}" ) ]] && USER_STR=" --username ${MONGODB_USER}"
 [[ ( -n "${MONGODB_PASS}" ) ]] && PASS_STR=" --password ${MONGODB_PASS}"
 [[ ( -n "${MONGODB_DB}" ) ]] && DB_STR=" --db ${MONGODB_DB}"
+[[ ( -n "${MONGODB_PORT}" ) ]] && PORT_STR=" --port ${MONGODB_PORT}"
+[[ ( -n "${MONGODB_HOST}" ) ]] && HOST_STR=" --host ${MONGODB_HOST}"
 
 #default value of retained backups
 RETAIN_COUNT_STR="7"
@@ -36,7 +34,7 @@ S3BACKUP=${S3PATH}\${BACKUP_NAME}
 
 aws configure set default.s3.signature_version s3v4
 echo "=> Backup started"
-if mongodump --host ${MONGODB_HOST} --port ${MONGODB_PORT} ${USER_STR}${PASS_STR}${DB_STR} --archive=\${BACKUP_NAME} --gzip ${EXTRA_OPTS} && aws s3 cp \${BACKUP_NAME} \${S3BACKUP} ${REGION_STR} ${ENDPOINT_STR} && rm \${BACKUP_NAME} ;then
+if mongodump ${HOST_STR}${PORT_STR}${USER_STR}${PASS_STR}${DB_STR} --archive=\${BACKUP_NAME} --gzip ${EXTRA_OPTS} && aws s3 cp \${BACKUP_NAME} \${S3BACKUP} ${REGION_STR} ${ENDPOINT_STR} && rm \${BACKUP_NAME} ;then
     echo "   > Backup succeeded"
 else
     echo "   > Backup failed"
@@ -58,7 +56,7 @@ fi
 S3RESTORE=${S3PATH}\${RESTORE_ME}
 aws configure set default.s3.signature_version s3v4
 echo "=> Restore database from \${RESTORE_ME}"
-if aws s3 cp \${S3RESTORE} \${RESTORE_ME} ${REGION_STR} ${ENDPOINT_STR} && mongorestore --host ${MONGODB_HOST} --port ${MONGODB_PORT} ${USER_STR}${PASS_STR}${DB_STR} --drop --archive=\${RESTORE_ME} --gzip && rm \${RESTORE_ME}; then
+if aws s3 cp \${S3RESTORE} \${RESTORE_ME} ${REGION_STR} ${ENDPOINT_STR} && mongorestore ${HOST_STR}${PORT_STR}${USER_STR}${PASS_STR}${DB_STR} --drop --archive=\${RESTORE_ME} --gzip && rm \${RESTORE_ME}; then
     echo "   Restore succeeded"
 else
     echo "   Restore failed"
